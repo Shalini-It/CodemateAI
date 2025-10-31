@@ -4,29 +4,45 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sparkles, Shuffle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function TipGenerator() {
   const [language, setLanguage] = useState("");
   const [topic, setTopic] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
 
   const handleGenerate = () => {
     setIsGenerating(true);
-    console.log("Generating tip with:", { language, topic, difficulty });
+    
     setTimeout(() => {
       setIsGenerating(false);
-      console.log("Tip generated!");
+      toast({
+        title: "Tip Generated!",
+        description: `Created a ${difficulty} ${language} tip about ${topic}`,
+      });
+      
+      setLanguage("");
+      setTopic("");
+      setDifficulty("");
     }, 2000);
   };
 
   const handleRandom = () => {
-    console.log("Generating random tip");
-    handleGenerate();
+    const languages = ["javascript", "python", "java", "cpp", "go", "rust"];
+    const topics = ["algorithms", "debugging", "performance", "security", "best-practices"];
+    const difficulties = ["beginner", "intermediate", "advanced"];
+    
+    setLanguage(languages[Math.floor(Math.random() * languages.length)]);
+    setTopic(topics[Math.floor(Math.random() * topics.length)]);
+    setDifficulty(difficulties[Math.floor(Math.random() * difficulties.length)]);
+    
+    setTimeout(() => handleGenerate(), 300);
   };
 
   return (
-    <Card data-testid="card-tip-generator">
+    <Card data-testid="card-tip-generator" className="border-primary/20">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-primary" />
@@ -51,6 +67,7 @@ export default function TipGenerator() {
                 <SelectItem value="cpp">C++</SelectItem>
                 <SelectItem value="go">Go</SelectItem>
                 <SelectItem value="rust">Rust</SelectItem>
+                <SelectItem value="typescript">TypeScript</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -67,6 +84,8 @@ export default function TipGenerator() {
                 <SelectItem value="performance">Performance</SelectItem>
                 <SelectItem value="security">Security</SelectItem>
                 <SelectItem value="best-practices">Best Practices</SelectItem>
+                <SelectItem value="data-structures">Data Structures</SelectItem>
+                <SelectItem value="clean-code">Clean Code</SelectItem>
               </SelectContent>
             </Select>
           </div>

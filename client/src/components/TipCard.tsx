@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Share2, Sparkles } from "lucide-react";
+import { Heart, Share2, Sparkles, Check } from "lucide-react";
 import CodeSnippet from "./CodeSnippet";
+import { useToast } from "@/hooks/use-toast";
 
 interface TipCardProps {
+  id?: number;
   title: string;
   topic: string;
   language: string;
@@ -17,6 +19,7 @@ interface TipCardProps {
 }
 
 export default function TipCard({
+  id,
   title,
   topic,
   language,
@@ -27,18 +30,61 @@ export default function TipCard({
   isFeatured = false,
 }: TipCardProps) {
   const [isSaved, setIsSaved] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (id) {
+      const saved = localStorage.getItem("savedTips");
+      if (saved) {
+        const savedTips = JSON.parse(saved);
+        setIsSaved(savedTips.some((tip: any) => tip.id === id));
+      }
+    }
+  }, [id]);
 
   const handleSave = () => {
-    setIsSaved(!isSaved);
-    console.log(isSaved ? "Tip unsaved" : "Tip saved");
+    if (!id) return;
+
+    const saved = localStorage.getItem("savedTips");
+    let savedTips = saved ? JSON.parse(saved) : [];
+
+    if (isSaved) {
+      savedTips = savedTips.filter((tip: any) => tip.id !== id);
+      setIsSaved(false);
+      toast({
+        title: "Tip removed",
+        description: "Removed from your saved tips",
+      });
+    } else {
+      savedTips.push({ id, title, language, topic });
+      setIsSaved(true);
+      toast({
+        title: "Tip saved",
+        description: "Added to your saved tips",
+      });
+    }
+
+    localStorage.setItem("savedTips", JSON.stringify(savedTips));
+    window.dispatchEvent(new Event("storage"));
   };
 
-  const handleShare = () => {
-    console.log("Share tip");
-  };
-
-  const handleGenerateSimilar = () => {
-    console.log("Generate similar tip");
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: title,
+          text: `Check out this ${language} tip: ${title}`,
+        });
+      } catch (err) {
+        console.log("Share cancelled");
+      }
+    } else {
+      await navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Link copied",
+        description: "Tip link copied to clipboard",
+      });
+    }
   };
 
   return (
@@ -77,7 +123,7 @@ export default function TipCard({
             className={isSaved ? "text-red-500" : ""}
             data-testid="button-save-tip"
           >
-            <Heart className={`w-4 h-4 mr-1 ${isSaved ? "fill-current" : ""}`} />
+            <Heart className={`w-4 h-4 mr-1 transition-all ${isSaved ? "fill-current scale-110" : ""}`} />
             {isSaved ? "Saved" : "Save"}
           </Button>
           <Button variant="ghost" size="sm" onClick={handleShare} data-testid="button-share-tip">
