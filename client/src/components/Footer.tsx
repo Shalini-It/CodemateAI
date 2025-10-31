@@ -76,6 +76,7 @@ export default function Footer() {
 
         <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
           <p>&copy; 2025 CodeMate AI. All rights reserved.</p>
+          <p className="mt-2">Created by Shalini Singh</p>
         </div>
       </div>
     </footer>
