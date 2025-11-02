@@ -19,9 +19,9 @@
 
 | Category | Technologies |
 |-----------|---------------|
-| **Frontend** | HTML5, CSS3, JavaScript (Vanilla / React if used) |
+| **Frontend** | HTML5, CSS3, JavaScript (Vanilla / React) |
 | **Backend (optional)** | Node.js / Express.js |
-| **AI Integration** | OpenAI / Gemini / LangChain (if applicable) |
+| **AI Integration** | OpenAI / Gemini / LangChain |
 | **Deployment** | Replit, GitHub Pages |
 | **Version Control** | Git & GitHub |
 
